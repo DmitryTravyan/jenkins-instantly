@@ -1,0 +1,14 @@
+unclassified:
+  globalLibraries:
+    libraries:
+      - defaultVersion: "master"
+        name: "shared-lib"                                                # Change it
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                credentialsId: "tech-user-ssh-key"                        # Change it
+                id: "tech-user"                                           # Change it
+                remote: "https://my-company-git/cicd-lib-bitbucket.git"   # Change it
+                traits:
+                  - "gitBranchDiscovery"

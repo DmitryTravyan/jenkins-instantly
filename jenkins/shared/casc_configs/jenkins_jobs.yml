@@ -1,0 +1,90 @@
+jobs:
+  - script: >
+      folder('utils')
+  - script: >
+      pipelineJob('utils/job-dsl-bitbucket') {
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github/job-dsl-example.git')
+                  credentials('tech-user')
+                }
+                branch('*/master')
+              }
+            }
+            lightweight()
+          }
+        }
+
+        triggers {
+            genericTrigger {
+                genericVariables {
+                    genericVariable {
+                        key('eventKey')
+                        value('$.eventKey')
+                        expressionType('JSONPath')
+                        regexpFilter('(repo:refs_changed | repo:comment:added | pr:opened | pr:merged)')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('actor_name')
+                        value('$.actor.name')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('repository_id')
+                        value('$.repository.id')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('repository_project')
+                        value('$.repository.project')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('repository_name')
+                        value('$.repository.name')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('repository_links_clone')
+                        value('$.repository.links.clone')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('repository_links_self')
+                        value('$.repository.links.self')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                    genericVariable {
+                        key('changes')
+                        value('$.changes')
+                        expressionType('JSONPath')
+                        regexpFilter('')
+                        defaultValue('')
+                    }
+                }
+                token('job-dsl')
+                printContributedVariables(true)
+                printPostContent(true)
+                silentResponse(false)
+                causeString('Triggered on $eventKey')
+                regexpFilterText("")
+                regexpFilterExpression("")
+            }
+        }
+      }

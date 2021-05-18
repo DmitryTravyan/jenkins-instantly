@@ -1,0 +1,8 @@
+unclassified:
+  collapsingSectionNote:
+    sections:
+      - collapseOnlyOneLevel: false
+        collapseSection: true
+        sectionDisplayName: "Stage \"{1}\""
+        sectionEndPattern: "\\[Pipeline\\] // stage"
+        sectionStartPattern: "\\[Pipeline\\] \\{ \\((.*)\\)"

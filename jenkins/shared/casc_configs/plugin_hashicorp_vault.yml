@@ -1,0 +1,8 @@
+unclassified:
+  hashicorpVault:
+    configuration:
+      engineVersion: 2
+      skipSslVerification: true
+      timeout: 60
+      vaultCredentialId: "vault-local-system"
+      vaultUrl: "https://vault.local"

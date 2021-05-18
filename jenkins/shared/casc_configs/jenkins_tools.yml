@@ -1,0 +1,12 @@
+tool:
+  git:
+    installations:
+      - home: "git"
+        name: "Default"
+  mavenGlobalConfig:
+    globalSettingsProvider:
+      filePath:
+        path: "^${WORKSPACE}/.mvn/setings.xml"
+    settingsProvider:
+      filePath:
+        path: "^${WORKSPACE}/.mvn/setings.xml"

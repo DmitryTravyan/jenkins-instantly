@@ -1,0 +1,58 @@
+# Plugins list and versions may be looked at https://updates.jenkins.io/download/plugins/
+# plugin_name:vesion[:lock(true|false)][:plugin_url]
+
+# Administration
+## Core
+configuration-as-code:latest
+structs:latest
+jaxb:latest
+
+## Tools
+monitoring:latest
+http_request:latest
+
+# Version Control System
+git:latest
+
+# User interface
+## Themes
+material-theme:latest
+
+## Interface
+yet-another-build-visualizer:latest
+cloudbees-folder:latest
+locale:latest
+linenumbers:latest
+collapsing-console-sections:latest
+
+# Build management
+## Build wrappers
+workflow-aggregator:latest
+
+## Build parameters
+build-with-parameters:latest
+
+## Additional
+ansicolor:latest
+checkmarx:latest
+sonar:latest
+job-dsl:latest
+
+## Build triggers
+generic-webhook-trigger:latest
+
+## System
+workflow-step-api:latest
+workflow-api:latest
+workflow-job:latest
+
+# management
+## Auth
+active-directory:latest
+matrix-auth:latest
+authorize-project:latest
+
+## Credentials access
+credentials:latest
+credentials-binding:latest
+hashicorp-vault-plugin:latest

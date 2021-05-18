@@ -1,0 +1,16 @@
+jenkins:
+  authorizationStrategy:
+    globalMatrix:
+      grantedPermissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:admin"
+        - "Overall/Read:init_slave"
+        - "Agent/Connect:init_slave"
+  securityRealm:
+    local:
+      users:
+        - id: admin
+          password: 'admin'
+        - id: init_slave
+          password: 'slave'
+

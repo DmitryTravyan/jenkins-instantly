@@ -1,0 +1,114 @@
+jenkins:
+  agentProtocols:
+    - "JNLP4-connect"
+    - "Ping"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  disableRememberMe: false
+  labelAtoms:
+    - name: "master"
+    - name: "production"
+    - name: "test"
+  labelString: "master"
+  markupFormatter: "plainText"
+  mode: EXCLUSIVE
+  myViewsTabBar: "standard"
+  nodes:
+    - permanent:
+        labelString: "production"
+        launcher:
+          jnlp:
+            webSocket: true
+            workDirSettings:
+              disabled: false
+              failIfWorkDirIsMissing: false
+              internalDir: "remoting"
+        mode: EXCLUSIVE
+        name: "production-slave-local"
+        numExecutors: 5
+        remoteFS: "/data/jenkins/volume"
+        retentionStrategy: "always"
+    - permanent:
+        labelString: "test"
+        launcher:
+          jnlp:
+            webSocket: true
+            workDirSettings:
+              disabled: false
+              failIfWorkDirIsMissing: false
+              internalDir: "remoting"
+        mode: EXCLUSIVE
+        name: "test-slave-local"
+        numExecutors: 5
+        remoteFS: "/data/jenkins"
+        retentionStrategy: "always"
+  numExecutors: 0
+  primaryView:
+    all:
+      name: "all"
+  projectNamingStrategy: "standard"
+  quietPeriod: 3
+  remotingSecurity:
+    enabled: true
+  scmCheckoutRetryCount: 0
+  slaveAgentPort: -1
+  updateCenter:
+    sites:
+      - id: "default"
+        url: "https://updates.jenkins.io/update-center.json"
+  views:
+    - all:
+        name: "all"
+  viewsTabBar: "standard"
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: false
+  queueItemAuthenticator:
+    authenticators:
+      - global:
+          strategy: "triggeringUsersAuthorizationStrategy"
+  sSHD:
+    port: -1
+unclassified:
+  buildDiscarders:
+    configuredBuildDiscarders:
+    - "jobBuildDiscarder"
+    - simpleBuildDiscarder:
+        discarder:
+          logRotator:
+            artifactDaysToKeepStr: "7"
+            artifactNumToKeepStr: "10"
+            daysToKeepStr: "7"
+            numToKeepStr: "10"
+  location:
+    adminAddress: "dtrser@gmail.com"
+    url: https://jenkins.local/
+  mailer:
+    charset: "UTF-8"
+    useSsl: true
+  defaultFolderConfiguration:
+    healthMetrics:
+      - worstChildHealthMetric:
+          recursive: true
+  shell:
+    shell: "/bin/sh"
+  whitelist:
+    enabled: false
+  globalDefaultFlowDurabilityLevel:
+    durabilityHint: PERFORMANCE_OPTIMIZED
+  gitSCM:
+    addGitTagAction: false
+    allowSecondFetch: false
+    createAccountBasedOnEmail: false
+    disableGitToolChooser: false
+    hideCredentials: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  fingerprints:
+    fingerprintCleanupDisabled: false
+    storage: "file"

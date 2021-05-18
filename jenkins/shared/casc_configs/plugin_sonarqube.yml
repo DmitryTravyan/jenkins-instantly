@@ -1,0 +1,11 @@
+unclassified:
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: true
+    installations:
+      - credentialsId: "sonarqube-credential"
+        name: "sonarqube-local"
+        serverUrl: "http://sonarqube.local"
+        triggers:
+          skipScmCause: false
+          skipUpstreamCause: false
+        webhookSecretId: "sonarqube-local-webhook-token"
