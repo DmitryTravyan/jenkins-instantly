@@ -3,11 +3,11 @@ storage "file" {
 }
 
 listener "tcp" {
-  address     = "0.0.0.0:9002"
+  address     = "0.0.0.0:10002"
   tls_disable = "true"
 }
 disable_mlock = true
 ui = false
 
-api_addr = "http://0.0.0.0:9002"
+api_addr = "http://0.0.0.0:10002"
 disable_clustering = true

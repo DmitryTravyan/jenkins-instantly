@@ -26,7 +26,7 @@ RUN microdnf install vault-${VAULT_VERSION} curl iputils vim \
     && mkdir -p /data/vault \
     && chown -R jenkins:jenkins /data/vault /usr/bin/vault
 
-EXPOSE 443
+EXPOSE ${VAULT_PORT}
 
 WORKDIR /data/vault
 

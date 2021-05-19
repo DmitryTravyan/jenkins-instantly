@@ -6,10 +6,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-include .env
+include _env
 
 WORKSPACE := $(shell pwd)
-VAULT_WORKSPACE := "${WORKSPACE}/vault"
+VAULT_WORKSPACE := "${WORKSPACE}/vault/shared"
 JENKINS_WORKSPACE := "${WORKSPACE}/jenkins/shared"
 
 define print_delimiter
@@ -17,16 +17,14 @@ define print_delimiter
 endef
 
 define initialize_vault
-	curl --data @vault/init.json https://vault.local/v1/sys/init > vault/shared/init_secret.json
-    curl --data $(echo "{\"key\":"$(cat vault/shared/init_secret.json | jq '.keys[0]')"}") https://vault.local/v1/sys/unseal
-    export VAULT_TOKEN=$(cat vault/shared/init_secret.json | jq -r .root_token) && echo $VAULT_TOKEN
-    curl --header "X-Vault-Token:${VAULT_TOKEN}" --request POST --data @vault/approle.json https://vault.local/v1/sys/auth/approle
-    curl --header "X-Vault-Token:${VAULT_TOKEN}" --request PUT --data @vault/system-policy.json https://vault.local/v1/sys/policies/acl/system
-    curl --header "X-Vault-Token:${VAULT_TOKEN}" --request PUT --data @vault/shared-policy.json https://vault.local/v1/sys/policies/acl/shared
-    curl --header "X-Vault-Token:${VAULT_TOKEN}" --request POST --data '{ "type":"kv-v2" }' https://vault.local/v1/sys/mounts/secret
-	curl --header "X-Vault-Token:${VAULT_TOKEN}" --request PUT --data @vault/jenkins-role.json https://vault.local/v1/auth/approle/role/jenkins
-	export ROLE_ID=$(curl --header "X-Vault-Token:${VAULT_TOKEN}" --request GET https://vault.local/v1/auth/approle/role/jenkins/role-id | jq -r .data.role_id)
-	export SECRET_ID=$(curl --header "X-Vault-Token:${VAULT_TOKEN}" --request POST https://vault.local/v1/auth/approle/role/jenkins/secret-id | jq -r .data.secret_id)
+	vault_init_body=$(curl --data @vault/init.json https://vault.local/v1/sys/init)
+	vault_unseal_key=$(echo $vault_init_body | jq -r '.keys[0]')
+	vault_token=$(echo $vault_init_body | jq -r .root_token)
+
+	vault_unseal_body=$(echo "{\"key\":\"$vault_unseal_key\"}")
+    curl --data $vault_unseal_body https://vault.local/v1/sys/unseal
+
+
 endef
 
 #Print help message
@@ -41,7 +39,7 @@ dc-build-jenkins:
 	--build-arg JENKINS_VERSION=${JENKINS_VERSION} \
 	--build-arg JENKINS_DOMAIN=${JENKINS_DOMAIN} \
 	--build-arg JENKINS_MASTER_PORT=${JENKINS_MASTER_PORT} \
-	--build-arg SLAVE_PORT=${SLAVE_PORT} \
+	--build-arg JENKINS_OPTS=${JENKINS_OPTS} \
 	--build-arg USER=${USER} \
 	--build-arg GROUP=${GROUP} \
 	--build-arg UID=${UID} \
@@ -84,7 +82,7 @@ dc-build-jenkins-no-cache:
 	--build-arg JENKINS_VERSION=${JENKINS_VERSION} \
 	--build-arg JENKINS_DOMAIN=${JENKINS_DOMAIN} \
 	--build-arg JENKINS_MASTER_PORT=${JENKINS_MASTER_PORT} \
-	--build-arg SLAVE_PORT=${SLAVE_PORT} \
+	--build-arg JENKINS_OPTS=${JENKINS_OPTS} \
 	--build-arg USER=${USER} \
 	--build-arg GROUP=${GROUP} \
 	--build-arg UID=${UID} \
@@ -129,23 +127,12 @@ dc-create-network:
 dc-start-jenkins:
 	@docker run -d \
 	-v ${JENKINS_WORKSPACE}:/data/jenkins/shared \
-	-p ${SLAVE_PORT}:${SLAVE_PORT} \
 	--net ${NETWORK_NAME} ${JENKINS_MASTER_NETWORK_ARGS} \
 	--ip ${JENKINS_MASTER_IP} \
 	--add-host ${JENKINS_DOMAIN}:${NGINX_IP} \
 	--add-host ${VAULT_DOMAIN}:${NGINX_IP} \
 	--name ${JENKINS_NAME} \
 	${JENKINS_NAME}:${JENKINS_VERSION}
-
-dc-start-nginx:
-	@docker run -d \
-	-p 443:443 \
-	-p ${JENKINS_MASTER_PORT}:${JENKINS_MASTER_PORT} \
-	-p ${VAULT_PORT}:${VAULT_PORT} \
-	--net ${NETWORK_NAME} \
-	--ip ${NGINX_IP} \
-	--name ${NGINX_NAME} \
-	${NGINX_NAME}:${NGINX_VERSION}
 
 dc-start-vault:
 	@docker run -d \
@@ -158,25 +145,40 @@ dc-start-vault:
 	--name ${VAULT_NAME} \
 	${VAULT_NAME}:${VAULT_VERSION}
 
+dc-start-nginx:
+	@docker run -d \
+	-p 443:443/tcp \
+	-p 443:443/udp \
+	--net ${NETWORK_NAME} \
+	--ip ${NGINX_IP} \
+	--name ${NGINX_NAME} \
+	${NGINX_NAME}:${NGINX_VERSION}
+
+
 dc-init-vault:
 	$(call initialize_vault)
 
 dc-clean-start: dc-clean dc-start ## Start with cleaning all old containers
 
 dc-up: ## launching if existing containers of same name
-	@docker container start ${JENKINS_MASTER_NAME}
-	@docker container top ${JENKINS_MASTER_NAME}
-	@docker container start ${JENKINS_NGINX_CONTAINER_NAME}
-	@docker container top ${JENKINS_NGINX_CONTAINER_NAME}
+	@docker container start ${JENKINS_NAME}
+	@docker container top ${JENKINS_NAME}
+	@docker container start ${VAULT_NAME}
+	@docker container top ${VAULT_NAME}
+	@docker container start ${NGINX_NAME}
+	@docker container top ${NGINX_NAME}
 
 dc-logs: ## show container logs
-	@docker logs ${JENKINS_MASTER_NAME}
+	@docker logs ${JENKINS_NAME}
 	$(call print_delimiter)
-	@docker logs ${JENKINS_NGINX_CONTAINER_NAME}
+	@docker logs ${VAULT_NAME}
+	$(call print_delimiter)
+	@docker logs ${NGINX_NAME}
 
 dc-stop: ## stop container
-	@docker stop ${JENKINS_MASTER_NAME}
-	@docker stop ${JENKINS_NGINX_CONTAINER_NAME}
+	@docker stop ${JENKINS_NAME}
+	@docker stop ${VAULT_NAME}
+	@docker stop ${NGINX_NAME}
 
 dc-clean: ## remove all stopped containers
 	@docker container prune -f
@@ -185,13 +187,13 @@ dc-clean: ## remove all stopped containers
 dc-destroy: dc-stop dc-clean ## stop containers and remove all stopped containers
 
 dc-attach-jenkins: ## attach to running jenkins master container
-	@docker exec -it ${JENKINS_MASTER_NAME} /bin/bash
+	@docker exec -it ${JENKINS_NAME} /bin/bash
 
 dc-attach-jenkins-nginx: ## attach to running jenkins nginx container
-	@docker exec -it ${JENKINS_NGINX_CONTAINER_NAME} /bin/bash
+	@docker exec -it ${NGINX_NAME} /bin/bash
 
 dc-attach-vault: ## attach to running bitbucket container
-	@docker exec -it ${VAULT_CONTAINER_NAME} /bin/bash
+	@docker exec -it ${VAULT_NAME} /bin/bash
 
 dc-build-slave:
 	@docker build --force-rm --progress=plain --no-cache \
