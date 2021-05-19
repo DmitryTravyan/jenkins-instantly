@@ -1,0 +1,91 @@
+####################################***NETWORK SETTINGS***##############################################################
+# DOCKER PARAMS
+## SHARED PARAMS
+NETWORK_NAME=network-local
+NETWORK_SUBNET=172.23.0.0/26
+NETWORK_ARGS=
+
+## NGINX
+NGINX_IP=172.23.0.10
+NGINX_NETWORK_ARGS=""
+
+## JENKINS
+JENKINS_MASTER_IP=172.23.0.11
+JENKINS_MASTER_NETWORK_ARGS=
+SLAVE_IP_1=172.23.0.12
+SLAVE_IP_2=172.23.0.13
+SLAVE_NETWORK_ARGS=
+
+## VAULT
+VAULT_IP=172.23.0.20
+VAULT_NETWORK_ARGS=""
+
+
+####################################***USER_SETTINGS***#################################################################
+# USER SETTINGS
+## SHARED
+USER=jenkins
+GROUP=jenkins
+UID=11160
+GID=11160
+USER_HOME=/data/jenkins
+
+
+####################################***JENKINS SETTINGS***##############################################################
+# MAKEFILE
+## JENKINS MASTER
+JENKINS_NAME=jenkins-local
+JENKINS_VERSION=2.292
+JENKINS_MASTER_PORT=10001
+JENKINS_HOME=/data/jenkins
+JENKINS_OPTS="-httpPort=${JENKINS_MASTER_PORT} --httpListenAddress=0.0.0.0"
+JENKINS_DOMAIN=jenkins.local
+JENKINS_WAR_CENTER=https://get.jenkins.io
+
+## PLUGIN MANAGER OPTIONS
+JENKINS_UPDATE_CENTER=https://updates.jenkins.io
+PLUGIN_MANAGER_URL="https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download"
+PLUGIN_MANAGER_VERSION=2.9.0
+
+## JAVA RUNTIME OPTIONS
+JVM_TIMEZONE="-Duser.timezone="Europe/Moscow""
+JVM_ENCODING="-Dfile.encoding=UTF8"
+JVM_LOGGING="-Djava.util.logging.config.file=${JENKINS_REFERENCE_DIR}/log.properties"
+JVM_SETUP_WIZARD="-Djenkins.install.runSetupWizard=false"
+JVM_UPDATE_CENTER="-Dhudson.model.UpdateCenter.never=true"
+JVM_CASC_DELAY="-Dio.jenkins.plugins.casc.ConfigurationAsCode.initialDelay=9000"
+JVM_TRUST_STORE="-Djavax.net.ssl.trustStore=${CERTS_ANCHORS}"
+JAVA_OPTS="${JVM_TIMEZONE} ${JVM_ENCODING} ${JVM_LOGGING} ${JVM_SETUP_WIZARD} ${JVM_UPDATE_CENTER} ${JVM_CASC_DELAY} ${JVM_TRUST_STORE}"
+JAVA_MEMORY_ARGS="-Xmn128M -Xms4g -Xmx8g"
+CERTS_ANCHORS="/usr/share/pki/ca-trust-source/anchors"
+SESSION_TIMEOUT=30
+
+####################################***JENKINS SLAVES SETTINGS***#######################################################
+# SLAVES
+## JENKINS AGENT
+SLAVE_NAME_BASE=slave-local
+SLAVE_NAME_1=test-slave-local
+SLAVE_NAME_2=production-slave-local
+SLAVE_WORKSPACE="/data/jenkins/volume"
+
+##INIT USER (MUST TO DELETE AFTER INITIATING SLAVES)
+SLAVE_INIT_USER=init_slave
+SLAVE_INIT_PASSWORD=slave
+
+
+#########################################***VAULT SETTINGS***###########################################################
+## VAULT SETTINGS
+VAULT_NAME=vault-local
+VAULT_VERSION=1.7.1
+VAULT_DOMAIN=vault.local
+VAULT_PORT=10002
+
+VAULT_UNSEAL_KEY=b9fd3c7f162554647b441c384fe33eae1f4a69fc61084e4b640405ad70550f2c
+VAULT_TOKEN=s.7KJTiSYDsIANaKCqSbB1x8F3
+VAULT_ROLE_ID=4d826090-6a19-a85a-5a1c-7e75239577b3
+VAULT_SECRET_ID=5a1e83e6-ad3c-0408-444f-a310d5db3ac5
+
+#########################################***NGINX SETTINGS***###########################################################
+## NGINX
+NGINX_NAME=nginx-local
+NGINX_VERSION=1.20.0
