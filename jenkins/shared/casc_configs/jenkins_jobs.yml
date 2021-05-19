@@ -1,8 +1,20 @@
 jobs:
   - script: >
-      folder('utils')
+        folder('utils'){
+        	configure { folder ->
+                folder / 'properties' << 'com.datapipe.jenkins.vault.configuration.FolderVaultConfiguration' {
+                	configuration {
+                        vaultUrl 'https://vault.local'
+                        vaultCredentialId 'vault-local-shared'
+                        failIfNotFound true
+                        skipSslVerification false
+                        timeout 60
+                    }
+                }
+            }
+        }
   - script: >
-      pipelineJob('utils/job-dsl-bitbucket') {
+      pipelineJob('utils/jenkins-job-dsl') {
         definition {
           cpsScm {
             scm {

@@ -16,17 +16,6 @@ define print_delimiter
 	@echo ${GREEN} '---------------------------------------------------------------------------------------------' ${NC}
 endef
 
-define initialize_vault
-	vault_init_body=$(curl --data @vault/init.json https://vault.local/v1/sys/init)
-	vault_unseal_key=$(echo $vault_init_body | jq -r '.keys[0]')
-	vault_token=$(echo $vault_init_body | jq -r .root_token)
-
-	vault_unseal_body=$(echo "{\"key\":\"$vault_unseal_key\"}")
-    curl --data $vault_unseal_body https://vault.local/v1/sys/unseal
-
-
-endef
-
 #Print help message
 help: ## get help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -156,7 +145,7 @@ dc-start-nginx:
 
 
 dc-init-vault:
-	$(call initialize_vault)
+	@bash ./vault/init.sh
 
 dc-clean-start: dc-clean dc-start ## Start with cleaning all old containers
 

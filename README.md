@@ -1,4 +1,4 @@
-# get jenkins as code from the one repo 
+# JENKINS-INSTANTLY
 
 ## Сборка с дефолтными настройками
 ## Сборка и запуск
