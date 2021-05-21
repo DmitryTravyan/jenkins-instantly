@@ -60,6 +60,7 @@ JAVA_MEMORY_ARGS="-Xmn128M -Xms4g -Xmx8g"
 CERTS_ANCHORS="/usr/share/pki/ca-trust-source/anchors"
 SESSION_TIMEOUT=30
 
+
 ####################################***JENKINS SLAVES SETTINGS***#######################################################
 # SLAVES
 ## JENKINS AGENT
@@ -95,3 +96,6 @@ JDSL_VAULT_SECRET_ID=38093f73-86ee-4714-db7a-5acd0b597032
 ## NGINX
 NGINX_NAME=nginx-local
 NGINX_VERSION=1.20.0
+
+## GITHUB
+PERSONAL_TOKEN=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

@@ -16,17 +16,9 @@ jobs:
   - script: >
       pipelineJob('utils/jenkins-job-dsl') {
         definition {
-          cpsScm {
-            scm {
-              git {
-                remote {
-                  url('https://github/job-dsl-example.git')
-                  credentials('tech-user')
-                }
-                branch('*/master')
-              }
-            }
-            lightweight()
+          cps {
+            script(new File('/data/jenkins/shared/groovy/jdsl-script.groovy').text)
+            sandbox(false)
           }
         }
 

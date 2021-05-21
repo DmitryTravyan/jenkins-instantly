@@ -20,7 +20,7 @@ COPY agents/slave.sh /data/jenkins/
 COPY nginx/certs/* ${CERTS_ANCHORS}/
 COPY yum.repos.d/adoptopenjdk.repo /etc/yum.repos.d/adoptopenjdk.repo
 
-RUN yum install -y vim curl iputils procps adoptopenjdk-11-openj9 \
+RUN yum install -y vim curl iputils procps adoptopenjdk-11-openj9 git \
     && yum clean all \
     && rm -rf /var/cache/dnf \
     && update-ca-trust -f \
